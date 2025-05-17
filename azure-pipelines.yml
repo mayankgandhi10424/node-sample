@@ -2,12 +2,16 @@ trigger:
   - main
 
 variables:
+  poolName: 'Azure Pipelines'
   imageName: 'node-sample'
   registry: 'demonodeacr.azurecr.io'
   appServiceName: 'demo-node'
   resourceGroup: 'DemoRegistryRG'
   keyVaultName: 'demo-node-vault'
   serviceConnection: 'demo-node-service-connection'
+
+pool:
+  name: '$(poolName)'
 
 stages:
   - stage: BuildAndPush
