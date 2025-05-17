@@ -41,17 +41,14 @@ stages:
           runOnce:
             deploy:
               steps:
-                - task: AzureWebAppContainer@2
+                - task: AzureWebApp@1
                   inputs:
                     azureSubscription: '$(serviceConnection)'
                     appName: '$(appServiceName)'
                     resourceGroupName: '$(resourceGroup)'
+                    deployToSlotOrASE: false
                     containers: |
-                      [
-                        {
-                          "image": "$(registry)/$(imageName):$(Build.BuildId)"
-                        }
-                      ]
+                      $(registry)/$(imageName):$(Build.BuildId)
                   displayName: Deploy to Azure Web App
 
                 - script: |
