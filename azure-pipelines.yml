@@ -7,7 +7,7 @@ variables:
   appServiceName: 'demo-node'
   resourceGroup: 'DemoRegistryRG'
   keyVaultName: 'demo-node-vault'
-  serviceConnection: 'mayankgandhi10424'
+  serviceConnection: 'demo-node-service-connection'
 
 stages:
   - stage: BuildAndPush
