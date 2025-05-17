@@ -1,0 +1,61 @@
+trigger:
+  - main
+
+variables:
+  imageName: 'node-sample'
+  registry: 'demonodeacr.azurecr.io'
+  appServiceName: 'demo-node'
+  resourceGroup: 'DemoRegistryRG'
+  keyVaultName: 'demo-node-vault'
+  serviceConnection: 'mayankgandhi10424'
+
+stages:
+  - stage: BuildAndPush
+    displayName: Build and Push Image
+    jobs:
+      - job: Build
+        displayName: Build and Push
+        steps:
+          - checkout: self
+
+          - task: AzureKeyVault@2
+            name: FetchSecrets
+            inputs:
+              azureSubscription: '$(serviceConnection)'
+              KeyVaultName: '$(keyVaultName)'
+              SecretsFilter: 'CONTAINER-REGISTRY-SECRET'
+
+          - script: |
+              docker build -t $(registry)/$(imageName):$(Build.BuildId) .
+              echo $(CONTAINER-REGISTRY-SECRET) | docker login $(registry) -u <your-acr-username> --password-stdin
+              docker push $(registry)/$(imageName):$(Build.BuildId)
+            displayName: Build and Push Docker Image
+
+  - stage: Deploy
+    displayName: Deploy to App Service
+    dependsOn: BuildAndPush
+    jobs:
+      - deployment: DeployWeb
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebAppContainer@2
+                  inputs:
+                    azureSubscription: '$(serviceConnection)'
+                    appName: '$(appServiceName)'
+                    resourceGroupName: '$(resourceGroup)'
+                    containers: |
+                      [
+                        {
+                          "image": "$(registry)/$(imageName):$(Build.BuildId)"
+                        }
+                      ]
+                  displayName: Deploy to Azure Web App
+
+                - script: |
+                    az webapp restart --name $(appServiceName) --resource-group $(resourceGroup)
+                  displayName: Restart App Service
+                  env:
+                    AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY: $(CONTAINER-REGISTRY-SECRET)
