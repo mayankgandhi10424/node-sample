@@ -2,7 +2,7 @@ trigger:
   - main
 
 variables:
-  poolName: 'Azure Pipelines'
+  poolName: 'Azure Pipeline'
   imageName: 'node-sample'
   registry: 'demonodeacr.azurecr.io'
   appServiceName: 'demo-node'
