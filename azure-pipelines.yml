@@ -7,7 +7,7 @@ variables:
   registry: 'demonodeacr.azurecr.io'
   appServiceName: 'demo-node'
   resourceGroup: 'DemoRegistryRG'
-  keyVaultName: 'demo-node-vault'
+  keyVaultName: 'demo-node-secret'
   serviceConnection: 'demo-node-service-connection'
 
 pool:
